@@ -1,0 +1,31 @@
+﻿@page "/my-api-project"
+@inject BlazorWASM.Services.APIService ApiService
+
+<h3>MitAPIProjekt</h3>
+<h3>@_stat</h3>
+
+@if (_milesPrices.Count != 0)
+{
+    foreach (Miles mile in _milesPrices)
+    {
+        <p>@mile.Price</p>
+        <p>@mile.Date</p>
+    }
+}
+
+@code {
+
+    string _stat = "good";
+    List<Miles> _milesPrices = [];
+    
+    protected override async Task OnInitializedAsync()
+    {
+        // Brug dataen i jeres UI
+        await GetMiles95Prices();
+    }
+
+    private async Task GetMiles95Prices()
+    {
+        _milesPrices = await ApiService.GetMilesPricesAsync();
+    }
+}
