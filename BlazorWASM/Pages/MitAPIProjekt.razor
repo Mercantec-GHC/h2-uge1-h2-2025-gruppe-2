@@ -1,31 +1,71 @@
 ﻿@page "/my-api-project"
-@inject BlazorWASM.Services.APIService ApiService
+@inject APIService ApiService
 
 <h3>MitAPIProjekt</h3>
 <h3>@_stat</h3>
 
-@if (_milesPrices.Count != 0)
-{
-    foreach (Miles mile in _milesPrices)
-    {
-        <p>@mile.Price</p>
-        <p>@mile.Date</p>
-    }
-}
+<div class="container-fluid overflow-x-auto">
+    <LineChart @ref="lineChart" Width="800"/>
+</div>
 
 @code {
-
+    private LineChart lineChart = default!;
+    private LineChartOptions lineChartOptions = default!;
+    private ChartData chartData = default!;
     string _stat = "good";
-    List<Miles> _milesPrices = [];
-    
+
     protected override async Task OnInitializedAsync()
     {
-        // Brug dataen i jeres UI
-        await GetMiles95Prices();
+        var colors = ColorUtility.CategoricalTwelveColors;
+
+        var labels = new List<string> { "2015-01-02", "2015-01-03", "2015-01-04", "2015-01-05", "2015-01-06", "2015-01-07", "2015-01-08", "2015-01-09", "2015-01-10", "2015-01-11", "2015-01-12", "2015-01-13", "2015-01-02", "2015-01-03", "2015-01-04", "2015-01-05", "2015-01-06", "2015-01-07", "2015-01-08", "2015-01-09", "2015-01-10", "2015-01-11", "2015-01-12", "2015-01-13", "2015-01-02", "2015-01-03", "2015-01-04", "2015-01-05", "2015-01-06", "2015-01-07", "2015-01-08", "2015-01-09", "2015-01-10", "2015-01-11", "2015-01-12", "2015-01-13" };
+        var data = new List<double?> { 10.40, 9.97, 9.97, 9.99, 9.91, 9.89, 9.89, 9.91, 9.91, 9.89, 9.81, 9.79, 10.40, 9.97, 9.97, 9.99, 9.91, 9.89, 9.89, 9.91, 9.91, 9.89, 9.81, 9.79, 10.40, 9.97, 9.97, 9.99, 9.91, 9.89, 9.89, 9.91, 9.91, 9.89, 9.81, 9.79 };
+
+        var dataStuff = SetData(await ApiService.GetMilesPricesAsync());
+        labels = dataStuff.Item1;
+        data = dataStuff.Item2;
+
+        var datasets = new List<IChartDataset>();
+
+        var dataset = new LineChartDataset
+        {
+            Label = "Miles95",
+            Data = data,
+            BackgroundColor = colors[2],
+            BorderColor = colors[2],
+            BorderWidth = 2,
+            HoverBorderWidth = 4,
+            PointRadius = [0],
+        };
+        datasets.Add(dataset);
+
+        chartData = new ChartData { Labels = labels, Datasets = datasets };
+
+        lineChartOptions = new();
+        lineChartOptions.Scales.Y!.Min = 8;
+        lineChartOptions.Scales.Y!.Max = 20;
+        lineChartOptions.Responsive = true;
+        lineChartOptions.Interaction = new Interaction { Mode = InteractionMode.Index };
+
+        lineChartOptions.Scales.X!.Title = new ChartAxesTitle { Text = "Date", Display = true };
+        lineChartOptions.Scales.Y!.Title = new ChartAxesTitle { Text = "Price", Display = true };
+
+        lineChartOptions.Plugins.Title!.Text = "Mile95 price over time";
+        lineChartOptions.Plugins.Title.Display = true;
+        await lineChart.InitializeAsync(chartData, lineChartOptions);
     }
 
-    private async Task GetMiles95Prices()
+    private (List<string>, List<double?>) SetData(List<Miles> miles)
     {
-        _milesPrices = await ApiService.GetMilesPricesAsync();
+        List<string> dates = [];
+        List<double?> prices = [];
+        foreach (Miles mile in miles)
+        {
+            dates.Add(mile.Date);
+            prices.Add(mile.Price);
+        }
+
+        return (dates, prices);
     }
+
 }

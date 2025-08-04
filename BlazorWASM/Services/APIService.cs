@@ -48,7 +48,7 @@ namespace BlazorWASM.Services
                 {
                     string json = await response.Content.ReadAsStringAsync();
                     var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                    options.Converters.Add(new StringToDecimalConverter());
+                    options.Converters.Add(new StringToDoubleConverter());
                     prices = JsonSerializer.Deserialize<List<Miles>>(json, options) ?? throw new NullReferenceException();
                     if (prices.Count > 0)
                         Console.WriteLine(prices[0].Price + " " + prices[0].Date);

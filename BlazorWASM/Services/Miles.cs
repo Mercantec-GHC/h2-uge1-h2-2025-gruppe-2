@@ -5,34 +5,34 @@ using System.Text.Json.Serialization;
 
 public class Miles
 {
-    [JsonConverter(typeof(StringToDecimalConverter))]
-    public decimal Price { get; set; }
+    [JsonConverter(typeof(StringToDoubleConverter))]
+    public double Price { get; set; }
 
     public string Date { get; set; } = string.Empty;
 }
 
-public class StringToDecimalConverter : JsonConverter<decimal>
+public class StringToDoubleConverter : JsonConverter<double>
 {
-    public override decimal Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override double Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType == JsonTokenType.String)
         {
-            if (decimal.TryParse(reader.GetString(), out var value))
+            if (double.TryParse(reader.GetString(), out var value))
             {
                 return value;
             }
 
-            throw new JsonException($"Unable to convert \"{reader.GetString()}\" to decimal.");
+            throw new JsonException($"Unable to convert \"{reader.GetString()}\" to double.");
         }
         else if (reader.TokenType == JsonTokenType.Number)
         {
-            return reader.GetDecimal();
+            return reader.GetDouble();
         }
 
-        throw new JsonException($"Unexpected token {reader.TokenType} when parsing decimal.");
+        throw new JsonException($"Unexpected token {reader.TokenType} when parsing double.");
     }
 
-    public override void Write(Utf8JsonWriter writer, decimal value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, double value, JsonSerializerOptions options)
     {
         writer.WriteNumberValue(value);
     }
