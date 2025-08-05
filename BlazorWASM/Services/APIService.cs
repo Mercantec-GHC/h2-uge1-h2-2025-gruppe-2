@@ -5,6 +5,7 @@ namespace BlazorWASM.Services
 {
     public class APIService
     {
+        // Closes self and takes care of handshakes.
         private readonly HttpClient _httpClient;
         private const string BaseUrl = "https://opgaver.mercantec.tech/api";
         private const string BasicUrl = "https://opgaver.mercantec.tech";
@@ -39,7 +40,7 @@ namespace BlazorWASM.Services
         public async Task<List<Miles>> GetMilesPricesAsync()
         {
             List<Miles> prices = [];
-            
+
             try
             {
                 var response = await _httpClient.GetAsync($"{BasicUrl}/Opgaver/Miles95");
@@ -49,7 +50,8 @@ namespace BlazorWASM.Services
                     string json = await response.Content.ReadAsStringAsync();
                     var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                     options.Converters.Add(new StringToDoubleConverter());
-                    prices = JsonSerializer.Deserialize<List<Miles>>(json, options) ?? throw new NullReferenceException();
+                    prices = JsonSerializer.Deserialize<List<Miles>>(json, options) ??
+                             throw new NullReferenceException();
                     if (prices.Count > 0)
                         Console.WriteLine(prices[0].Price + " " + prices[0].Date);
                 }
@@ -57,17 +59,45 @@ namespace BlazorWASM.Services
                 {
                     Console.WriteLine($"Error getting miles and dates: {response.StatusCode}");
                 }
-
-
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error getting miles and dates: {ex.Message}");
             }
-            
+
             return prices;
         }
+
+        public async Task<List<Country>> GetCountriesAsync()
+        {
+            List<Country> countries = [];
+
+            try
+            {
+                var response = await _httpClient.GetAsync($"{BaseUrl}/Countries");
+                if (response.IsSuccessStatusCode)
+                {
+                    string jsonContent = await response.Content.ReadAsStringAsync();
+                    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                    countries = JsonSerializer.Deserialize<List<Country>>(jsonContent, options);
+                    return countries;
+                }
+                else
+                {
+                    Console.WriteLine($"Error establishing connection: {response.StatusCode}");
+                    return [];
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error getting countries:" + ex.Message);
+                return [];
+            }
+            
+            return countries;
+        }
     }
+
 
     public class BackendStatus
     {
@@ -89,5 +119,4 @@ namespace BlazorWASM.Services
         public string? Error { get; set; }
         public bool IsError { get; set; }
     }
-
 }

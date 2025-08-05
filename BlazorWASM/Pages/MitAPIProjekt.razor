@@ -2,7 +2,20 @@
 @inject APIService ApiService
 
 <h3>MitAPIProjekt</h3>
-<h3>@_stat</h3>
+
+<div class="card w-auto">
+    <h1>Benzin analyse</h1>
+    @if (_firstPrice != null || _lastPrice != null)
+    {
+        <p>First fuel price (@_firstPrice?.Date): @_firstPrice?.Price</p>
+        <p>Last fuel price (@_lastPrice?.Date): @_lastPrice?.Price</p>
+    }
+</div>
+
+@if (_loading)
+{
+    <p><em>Loading...</em></p>
+}
 
 <div class="container-fluid overflow-x-auto">
     <LineChart @ref="lineChart" Width="800"/>
@@ -12,18 +25,18 @@
     private LineChart lineChart = default!;
     private LineChartOptions lineChartOptions = default!;
     private ChartData chartData = default!;
-    string _stat = "good";
+    bool _loading = true;
+
+    Miles? _firstPrice = new();
+    Miles? _lastPrice = new();
 
     protected override async Task OnInitializedAsync()
     {
         var colors = ColorUtility.CategoricalTwelveColors;
 
-        var labels = new List<string> { "2015-01-02", "2015-01-03", "2015-01-04", "2015-01-05", "2015-01-06", "2015-01-07", "2015-01-08", "2015-01-09", "2015-01-10", "2015-01-11", "2015-01-12", "2015-01-13", "2015-01-02", "2015-01-03", "2015-01-04", "2015-01-05", "2015-01-06", "2015-01-07", "2015-01-08", "2015-01-09", "2015-01-10", "2015-01-11", "2015-01-12", "2015-01-13", "2015-01-02", "2015-01-03", "2015-01-04", "2015-01-05", "2015-01-06", "2015-01-07", "2015-01-08", "2015-01-09", "2015-01-10", "2015-01-11", "2015-01-12", "2015-01-13" };
-        var data = new List<double?> { 10.40, 9.97, 9.97, 9.99, 9.91, 9.89, 9.89, 9.91, 9.91, 9.89, 9.81, 9.79, 10.40, 9.97, 9.97, 9.99, 9.91, 9.89, 9.89, 9.91, 9.91, 9.89, 9.81, 9.79, 10.40, 9.97, 9.97, 9.99, 9.91, 9.89, 9.89, 9.91, 9.91, 9.89, 9.81, 9.79 };
-
         var dataStuff = SetData(await ApiService.GetMilesPricesAsync());
-        labels = dataStuff.Item1;
-        data = dataStuff.Item2;
+        List<string> labels = dataStuff.Item1;
+        List<double?> data = dataStuff.Item2;
 
         var datasets = new List<IChartDataset>();
 
@@ -53,6 +66,7 @@
         lineChartOptions.Plugins.Title!.Text = "Mile95 price over time";
         lineChartOptions.Plugins.Title.Display = true;
         await lineChart.InitializeAsync(chartData, lineChartOptions);
+        _loading = false;
     }
 
     private (List<string>, List<double?>) SetData(List<Miles> miles)
@@ -64,6 +78,16 @@
             dates.Add(mile.Date);
             prices.Add(mile.Price);
         }
+
+        if (dates.Count == 0 || prices.Count == 0)
+            throw new Exception("Dates or prices are empty");
+
+        _firstPrice.Price = miles[0].Price;
+        _firstPrice.Date = miles[0].Date;
+        _lastPrice.Price = miles[miles.Count - 1].Price;
+        _lastPrice.Date = miles[miles.Count - 1].Date;
+        Console.WriteLine(_firstPrice);
+        Console.WriteLine(_lastPrice);
 
         return (dates, prices);
     }
