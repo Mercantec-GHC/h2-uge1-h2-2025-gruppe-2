@@ -1,26 +1,40 @@
 ﻿@page "/currency-guesser"
-@using System.Runtime.Intrinsics.X86
 @inject APIService ApiService
 
 <h3>Currency Guesser</h3>
 
 @if (_ready)
 {
-    <div class="flag-wrapper">
-        <h2>Score: @_score</h2>
-        <img class="flag-wrapper__image" alt="Current flag" src="@_currentCountry.Flags.svg"/>
-        <div class="button-container">
-            @foreach (Country option in _options)
-            {
-                foreach (var optionCurrency in option.Currencies!)
+    <div class="game-container">
+        <div class="flag-wrapper">
+            <img class="flag-wrapper__image" alt="Current flag" src="@_currentCountry.Flags.svg"/>
+            <div class="button-container">
+                @foreach (Country option in _options)
                 {
-                    <button class="btn btn-primary flag-wrapper__button"
-                            @onclick="() => CheckCurrency(optionCurrency.Key)">@optionCurrency.Key <br/> @optionCurrency.Value.Name
-                    </button>
+                    foreach (var optionCurrency in option.Currencies!)
+                    {
+                        <button class="btn btn-primary flag-wrapper__button"
+                                @onclick="() => CheckCurrency(optionCurrency.Key)">@optionCurrency.Key <br/> @optionCurrency.Value.Name
+                        </button>
+                    }
                 }
+            </div>
+        </div>
+        <div class="status-wrapper">
+            <h2>Score: @_score</h2>
+            @if (_scoreStatus != null)
+            {
+                if (_scoreStatus == true)
+                {
+                    <h3>Correct!</h3>
+                }
+                else
+                {
+                    <h3>Wrong!</h3>
+                }
+                <p>@_statusCountry uses the @_statusCurrency (@_statusCurrencyAbb)</p>
             }
         </div>
-
     </div>
 }
 else
@@ -28,8 +42,21 @@ else
     <p>Loading...</p>
 }
 
-
 <style>
+    .game-container {
+        display: flex;
+        gap: 20px;
+        align-items: flex-start;
+    }
+    
+    .status-wrapper {
+        width: fit-content;
+        flex: 2;
+        border: 1px solid lightgray;
+        border-radius: 5px;
+        padding: 15px;
+    }
+    
     .flag-wrapper {
         justify-content: center;
         display: flex;
@@ -37,9 +64,11 @@ else
         border: 1px solid lightgray;
         border-radius: 5px;
         max-width: 500px;
+        flex: 2;
     }
 
     .flag-wrapper__image {
+        border: 1px solid lightgray;
         max-width: 400px;
         margin-bottom: 10px;
         margin-top: 10px;
@@ -72,7 +101,6 @@ else
         color: black;
     }
 </style>
-
 @code {
     const int _optionsLength = 4;
     
@@ -82,6 +110,11 @@ else
     Country[] _options = new Country[_optionsLength];
     int _score = 0;
     bool _ready;
+    
+    bool? _scoreStatus;
+    string _statusCurrencyAbb = "";
+    string _statusCurrency = "";
+    string _statusCountry = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -115,7 +148,16 @@ else
         if (currency == _currentCountry.Currencies?.First().Key)
         {
             _score++;
+            _scoreStatus = true;
         }
+        else
+        {
+            _scoreStatus = false;
+        }
+
+        _statusCurrencyAbb = _currentCountry.Currencies.First().Key;
+        _statusCurrency = _currentCountry.Currencies.First().Value.Name;
+        _statusCountry = _currentCountry.Name.Common;
         SetCurrentCountry();
         SetOptions();
     }
