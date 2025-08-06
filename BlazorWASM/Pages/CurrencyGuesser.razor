@@ -1,41 +1,47 @@
 ﻿@page "/currency-guesser"
 @inject APIService ApiService
+@inject IJSRuntime JSRuntime
 
 <h3>Currency Guesser</h3>
 
 @if (_ready)
 {
-    <div class="game-container">
-        <div class="flag-wrapper">
-            <img class="flag-wrapper__image" alt="Current flag" src="@_currentCountry.Flags.svg"/>
-            <div class="button-container">
-                @foreach (Country option in _options)
-                {
-                    foreach (var optionCurrency in option.Currencies!)
+    @if (_scoreStatus != null && _scoreStatus == false)
+    {
+        <p>Wrong guess buddy! @_statusCountry uses the @_statusCurrency (@_statusCurrencyAbb)</p>
+        <p><b>Final score</b>: @_score</p>
+        <p><b>High score</b>: @_highScore</p>
+
+        <button class="btn btn-primary" @onclick="Restart">Restart?</button>
+    }
+    else
+    {
+        <div class="game-container">
+            <div class="flag-wrapper">
+                <img class="flag-wrapper__image" alt="Current flag" src="@_currentCountry.Flags.svg"/>
+                <div class="button-container">
+                    @foreach (Country option in _options)
                     {
-                        <button class="btn btn-primary flag-wrapper__button"
-                                @onclick="() => CheckCurrency(optionCurrency.Key)">@optionCurrency.Key <br/> @optionCurrency.Value.Name
-                        </button>
+                        foreach (var optionCurrency in option.Currencies!)
+                        {
+                            <button class="btn btn-primary flag-wrapper__button"
+                                    @onclick="() => CheckCurrency(optionCurrency.Key)">@optionCurrency.Key <br/> @optionCurrency.Value.Name
+                            </button>
+                        }
                     }
+                </div>
+            </div>
+            <div class="status-wrapper">
+                <h2>Score: @_score</h2>
+                @if (_scoreStatus != null)
+                {
+                    <h3>Correct!</h3>
+
+                    <p>@_statusCountry uses the @_statusCurrency (@_statusCurrencyAbb)</p>
                 }
             </div>
         </div>
-        <div class="status-wrapper">
-            <h2>Score: @_score</h2>
-            @if (_scoreStatus != null)
-            {
-                if (_scoreStatus == true)
-                {
-                    <h3>Correct!</h3>
-                }
-                else
-                {
-                    <h3>Wrong!</h3>
-                }
-                <p>@_statusCountry uses the @_statusCurrency (@_statusCurrencyAbb)</p>
-            }
-        </div>
-    </div>
+    }
 }
 else
 {
@@ -48,7 +54,7 @@ else
         gap: 20px;
         align-items: flex-start;
     }
-    
+
     .status-wrapper {
         width: fit-content;
         flex: 2;
@@ -56,7 +62,7 @@ else
         border-radius: 5px;
         padding: 15px;
     }
-    
+
     .flag-wrapper {
         justify-content: center;
         display: flex;
@@ -88,33 +94,50 @@ else
         flex: 1;
         min-width: 200px; /* Adjust this value based on your longest currency name */
     }
-    
+
     .btn-primary {
         background-color: transparent;
         color: black;
         border: 1px solid lightgray;
         transition: background-color 0.3s ease-in-out;
     }
-    
+
     .btn-primary:hover {
         background-color: lightgray;
         color: black;
     }
 </style>
+
+<script>
+    window.gameHelpers = {
+        saveScore: function (score) {
+            console.log("Saving score to local storage:", score);
+            localStorage.setItem("CurrencyGuesserHighScore", score.toString());
+        },
+
+        loadScore: function () {
+            const score = localStorage.getItem("CurrencyGuesserHighScore");
+            return score ? parseInt(score) : 0;
+        }
+    };
+
+</script>
+
 @code {
     const int _optionsLength = 4;
-    
+
     List<Country> _countries = new();
     Country _currentCountry = new();
     Random _randHelper = new();
     Country[] _options = new Country[_optionsLength];
     int _score = 0;
     bool _ready;
-    
+
     bool? _scoreStatus;
     string _statusCurrencyAbb = "";
     string _statusCurrency = "";
     string _statusCountry = "";
+    int _highScore;
 
     protected override async Task OnInitializedAsync()
     {
@@ -125,6 +148,17 @@ else
         SetOptions();
         _ready = true;
     }
+
+    private async Task SaveToLocalStorage()
+    {
+        await JSRuntime.InvokeVoidAsync("gameHelpers.saveScore", _score);
+    }
+
+    private async Task<int> LoadHighScore()
+    {
+        return await JSRuntime.InvokeAsync<int>("gameHelpers.loadScore");
+    }
+
 
     private void SetCurrentCountry()
     {
@@ -142,7 +176,7 @@ else
         ShuffleOptions();
     }
 
-    private void CheckCurrency(string currency)
+    private async Task CheckCurrency(string currency)
     {
         Console.WriteLine("Clicked currency: " + currency);
         if (currency == _currentCountry.Currencies?.First().Key)
@@ -153,6 +187,17 @@ else
         else
         {
             _scoreStatus = false;
+            _highScore = await LoadHighScore();
+            if (_score > _highScore)
+            {
+                Console.WriteLine("New highscore! " + _score);
+                await SaveToLocalStorage();
+                _highScore = _score;
+            }
+            else
+            {
+                Console.WriteLine("No new high score...");
+            }
         }
 
         _statusCurrencyAbb = _currentCountry.Currencies.First().Key;
@@ -187,6 +232,12 @@ else
     private void RemoveCountriesWithoutCurrencies()
     {
         _countries.RemoveAll(country => country.Currencies == null);
+    }
+
+    private void Restart()
+    {
+        _score = 0;
+        _scoreStatus = null;
     }
 
 }
