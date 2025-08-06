@@ -68,7 +68,7 @@ namespace BlazorWASM.Services
             return prices;
         }
 
-        public async Task<List<Country>> GetCountriesAsync()
+        public async Task<List<Country>> GetCountriesAsync() // TODO: Add a method to get the countries from the API
         {
             List<Country> countries = [];
 
