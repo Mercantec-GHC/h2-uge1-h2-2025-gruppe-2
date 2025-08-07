@@ -60,6 +60,10 @@ namespace BlazorWASM.Services
                     Console.WriteLine($"Error getting miles and dates: {response.StatusCode}");
                 }
             }
+            catch (JsonException ex)
+            {
+                Console.WriteLine($"Json exception for getting miles prices: {ex.Message}");
+            }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error getting miles and dates: {ex.Message}");
@@ -88,13 +92,16 @@ namespace BlazorWASM.Services
                     return [];
                 }
             }
+            catch (JsonException ex)
+            {
+                Console.WriteLine("Json exception for getting countries:" + ex.Message);
+                return [];
+            }
             catch (Exception ex)
             {
                 Console.WriteLine("Error getting countries:" + ex.Message);
                 return [];
             }
-            
-            return countries;
         }
     }
 
