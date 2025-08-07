@@ -1,4 +1,5 @@
 ﻿@page "/currency-guesser"
+@using System.Text.Json
 @inject APIService ApiService
 @inject IJSRuntime JSRuntime
 
@@ -122,7 +123,6 @@ else
     };
 
 </script>
-<button @onclick="SaveToLocalStorage">Click</button>
 
 @code {
     const int _optionsLength = 4;
@@ -139,6 +139,8 @@ else
     string _statusCurrency = "";
     string _statusCountry = "";
     int _highScore;
+    const string PutUrl = "http://localhost:8080/high-score?high-score-value=";
+    const string GetUrl = "http://localhost:8080/high-score";
 
     protected override async Task OnInitializedAsync()
     {
@@ -147,18 +149,17 @@ else
         RemoveCountriesWithoutCurrencies();
         SetCurrentCountry();
         SetOptions();
+        _highScore = await LoadHighScore();
         _ready = true;
     }
 
     private async Task SaveToLocalStorage()
     {
         await JSRuntime.InvokeVoidAsync("gameHelpers.saveScore", _score);
-
-        var url = $"http://localhost:8080/high-score?high-score-value=77";
-        using var httpClient = new HttpClient();
+        /*using var httpClient = new HttpClient();
         try
         {
-            var response = await httpClient.PostAsync(url, null);
+            var response = await httpClient.PutAsync(PutUrl + _score, null);
             if (!response.IsSuccessStatusCode)
             {
                 Console.WriteLine("Failed to update high score API.");
@@ -168,12 +169,40 @@ else
         {
             Console.WriteLine(e);
             return;
-        }
+        }*/
     }
 
     private async Task<int> LoadHighScore()
     {
-        return await JSRuntime.InvokeAsync<int>("gameHelpers.loadScore");
+        int score = await JSRuntime.InvokeAsync<int>("gameHelpers.loadScore");
+        /*using var httpClient = new HttpClient();
+        int score = 0;
+        
+        try
+        {
+            var response = await httpClient.GetAsync(GetUrl);
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Failed to update high score API.");
+            }
+            else
+            {
+                
+                var json = await response.Content.ReadAsStringAsync();
+                // Extract the value from the JSON object
+                using var doc = JsonDocument.Parse(json);
+                var highScoreProperty = doc.RootElement.GetProperty("high-score");
+                score = highScoreProperty.GetInt32();
+
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return -1;
+        }*/
+
+        return score;
     }
 
 
@@ -204,7 +233,6 @@ else
         else
         {
             _scoreStatus = false;
-            _highScore = await LoadHighScore();
             if (_score > _highScore)
             {
                 Console.WriteLine("New highscore! " + _score);
@@ -251,10 +279,11 @@ else
         _countries.RemoveAll(country => country.Currencies == null);
     }
 
-    private void Restart()
+    private async Task Restart()
     {
         _score = 0;
         _scoreStatus = null;
+        _highScore = await LoadHighScore();
     }
 
 }

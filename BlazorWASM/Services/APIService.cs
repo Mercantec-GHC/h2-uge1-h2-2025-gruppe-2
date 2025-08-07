@@ -72,7 +72,7 @@ namespace BlazorWASM.Services
             return prices;
         }
 
-        public async Task<List<Country>> GetCountriesAsync() // TODO: Add a method to get the countries from the API
+        public async Task<List<Country>> GetCountriesAsync()
         {
             List<Country> countries = [];
 
@@ -84,6 +84,11 @@ namespace BlazorWASM.Services
                     string jsonContent = await response.Content.ReadAsStringAsync();
                     var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
                     countries = JsonSerializer.Deserialize<List<Country>>(jsonContent, options);
+                    if (countries == null)
+                    {
+                        Console.WriteLine("Error deserializing countries");
+                        throw new NullReferenceException("Error deserializing countries");
+                    }
                     return countries;
                 }
                 else

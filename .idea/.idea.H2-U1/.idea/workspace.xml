@@ -11,7 +11,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cd84d801-df7c-4559-9bc9-bea4c5040714" name="Changes" comment="" />
+    <list default="true" id="cd84d801-df7c-4559-9bc9-bea4c5040714" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.H2-U1/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.H2-U1/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BlazorWASM/Pages/CurrencyGuesser.razor" beforeDir="false" afterPath="$PROJECT_DIR$/BlazorWASM/Pages/CurrencyGuesser.razor" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BlazorWASM/Services/APIService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/BlazorWASM/Services/APIService.cs" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -61,9 +65,8 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="mock:///AIAssistantSnippet.." root0="SKIP_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
-    <setting file="mock:///AIAssistantSnippet.." root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://C:/Users/andre/Desktop/Pog grammering/h2-uge1/BlazorWASM/Pages/CurrencyGuesser.razor" root0="SKIP_HIGHLIGHTING" root1="FORCE_HIGHLIGHTING" root2="FORCE_HIGHLIGHTING" />
+    <setting file="mock://C:/Users/andre/Desktop/Pog grammering/h2-uge1/BlazorWASM/Services/APIService.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BlazorWASM/wwwroot/lib/bootstrap/dist/css/bootstrap-reboot.css.map" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/BlazorWASM/wwwroot/lib/bootstrap/dist/js/bootstrap.bundle.min.js.map" root0="FORCE_HIGHLIGHTING" />
   </component>
@@ -83,28 +86,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "dotnet-watch.Dotnet.executor": "Run",
-    "git-widget-placeholder": "local-storage-save",
-    "ignore.virus.scanning.warn.message": "true",
-    "list.type.of.created.stylesheet": "CSS",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "terminal",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;dotnet-watch.Dotnet.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;list.type.of.created.stylesheet&quot;: &quot;CSS&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;terminal&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "stardust.markdown.MarkdownSplitEditorSuppressor:keyList": []
+  &quot;keyToStringList&quot;: {
+    &quot;stardust.markdown.MarkdownSplitEditorSuppressor:keyList&quot;: []
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="dotnet-watch.Dotnet">
     <configuration name="H2-U1.AppHost: http" type="AspireHostConfiguration" factoryName="Aspire Host" activateToolWindowBeforeRun="false">
       <option name="PROJECT_FILE_PATH" value="$PROJECT_DIR$/H2-U1.AppHost/H2-U1.AppHost.csproj" />
@@ -233,7 +236,10 @@
       <workItem from="1754373479389" duration="20037000" />
       <workItem from="1754459672595" duration="2529000" />
       <workItem from="1754463232556" duration="1750000" />
-      <workItem from="1754464998779" duration="5278000" />
+      <workItem from="1754464998779" duration="7645000" />
+      <workItem from="1754546424405" duration="1580000" />
+      <workItem from="1754548357662" duration="8817000" />
+      <workItem from="1754563844126" duration="6477000" />
     </task>
     <task id="LOCAL-00001" summary="Added a basic API call to get all Miles prices and corresponding dates.">
       <option name="closed" value="true" />
@@ -275,7 +281,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754471234840</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Added an API call that does not function, because of CORS">
+      <option name="closed" value="true" />
+      <created>1754562908587</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1754562908587</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -290,7 +304,8 @@
     <MESSAGE value="A simple game has been implemented for guessing the currency of every country" />
     <MESSAGE value="Added scoreboard!" />
     <MESSAGE value="Added a high scores system, which saves to the local storage on a browser" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added a high scores system, which saves to the local storage on a browser" />
+    <MESSAGE value="Added an API call that does not function, because of CORS" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added an API call that does not function, because of CORS" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
