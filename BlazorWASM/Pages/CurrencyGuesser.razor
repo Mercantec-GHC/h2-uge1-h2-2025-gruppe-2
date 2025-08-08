@@ -7,7 +7,7 @@
 
 @if (_ready)
 {
-    @if (_scoreStatus != null && _scoreStatus == false)
+    @if (_gameStatus != null && _gameStatus == false)
     {
         <p>Wrong guess buddy! @_statusCountry uses the @_statusCurrency (@_statusCurrencyAbb)</p>
         <p><b>Final score</b>: @_score</p>
@@ -21,7 +21,7 @@
             <div class="flag-wrapper">
                 <img class="flag-wrapper__image" alt="Current flag" src="@_currentCountry.Flags.svg"/>
                 <div class="button-container">
-                    @foreach (Country option in _options)
+                    @foreach (Country option in _currentOptions)
                     {
                         foreach (var optionCurrency in option.Currencies!)
                         {
@@ -34,7 +34,7 @@
             </div>
             <div class="status-wrapper">
                 <h2>Score: @_score</h2>
-                @if (_scoreStatus != null)
+                @if (_gameStatus != null)
                 {
                     <h3>Correct!</h3>
 
@@ -130,11 +130,11 @@ else
     List<Country> _countries = new();
     Country _currentCountry = new();
     Random _randHelper = new();
-    Country[] _options = new Country[_optionsLength];
+    Country[] _currentOptions = new Country[_optionsLength];
     int _score = 0;
     bool _ready;
 
-    bool? _scoreStatus;
+    bool? _gameStatus;
     string _statusCurrencyAbb = "";
     string _statusCurrency = "";
     string _statusCountry = "";
@@ -148,12 +148,13 @@ else
         DeleteMultipleCurrencies();
         RemoveCountriesWithoutCurrencies();
         SetCurrentCountry();
-        SetOptions();
+        SetCurrentOptions();
         _highScore = await LoadHighScore();
         _ready = true;
     }
 
-    private async Task SaveToLocalStorage()
+    /// Saves the high score in local storage
+    private async Task SaveHighScore()
     {
         await JSRuntime.InvokeVoidAsync("gameHelpers.saveScore", _score);
         /*using var httpClient = new HttpClient();
@@ -172,6 +173,7 @@ else
         }*/
     }
 
+    /// Loads the high score stored in local storage
     private async Task<int> LoadHighScore()
     {
         int score = await JSRuntime.InvokeAsync<int>("gameHelpers.loadScore");
@@ -211,14 +213,14 @@ else
         _currentCountry = _countries[_randHelper.Next(0, _countries.Count)];
     }
 
-    private void SetOptions()
+    private void SetCurrentOptions()
     {
         for (int i = 0; i < _optionsLength - 1; i++)
         {
-            _options[i] = _countries[_randHelper.Next(0, _countries.Count)];
+            _currentOptions[i] = _countries[_randHelper.Next(0, _countries.Count)];
         }
 
-        _options[_optionsLength - 1] = _currentCountry;
+        _currentOptions[_optionsLength - 1] = _currentCountry;
         ShuffleOptions();
     }
 
@@ -228,15 +230,15 @@ else
         if (currency == _currentCountry.Currencies?.First().Key)
         {
             _score++;
-            _scoreStatus = true;
+            _gameStatus = true;
         }
         else
         {
-            _scoreStatus = false;
+            _gameStatus = false;
             if (_score > _highScore)
             {
                 Console.WriteLine("New highscore! " + _score);
-                await SaveToLocalStorage();
+                await SaveHighScore();
                 _highScore = _score;
             }
             else
@@ -249,7 +251,7 @@ else
         _statusCurrency = _currentCountry.Currencies.First().Value.Name;
         _statusCountry = _currentCountry.Name.Common;
         SetCurrentCountry();
-        SetOptions();
+        SetCurrentOptions();
     }
 
     private void DeleteMultipleCurrencies()
@@ -270,7 +272,7 @@ else
         for (int i = _optionsLength - 1; i > 0; i--)
         {
             int j = _randHelper.Next(0, i + 1);
-            (_options[i], _options[j]) = (_options[j], _options[i]);
+            (_currentOptions[i], _currentOptions[j]) = (_currentOptions[j], _currentOptions[i]);
         }
     }
 
@@ -282,7 +284,7 @@ else
     private async Task Restart()
     {
         _score = 0;
-        _scoreStatus = null;
+        _gameStatus = null;
         _highScore = await LoadHighScore();
     }
 
